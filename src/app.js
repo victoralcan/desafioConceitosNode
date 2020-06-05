@@ -10,6 +10,22 @@ app.use(cors());
 
 const repositories = [];
 
+const checkIdMiddleware = (request, response, next) => {
+  const { id } = request.params;
+
+  if (!id) return response.status(400).json({ error: "ID não informado" });
+
+  const repository = repositories.filter(repository => repository.id === id);
+
+  if (repository.length === 0) {
+    return response.status(400).json({ error: "Não existe repositório com o ID informado" });
+  }
+
+  request.repository = repository;
+
+  return next();
+};
+
 app.get("/repositories", (request, response) => {
   return response.json(repositories);
 });
@@ -27,17 +43,10 @@ app.post("/repositories", (request, response) => {
   return response.json(repository);
 });
 
-app.put("/repositories/:id", (request, response) => {
+app.put("/repositories/:id", checkIdMiddleware, (request, response) => {
   const { title, url, techs } = request.body;
   const { id } = request.params;
-
-  if (!id) return response.status(400).json({ error: "ID não informado" });
-
-  const repository = repositories.filter(repository => repository.id === id);
-
-  if (repository.length === 0) {
-    return response.status(400).json({ error: "Não existe repositório com o ID informado" });
-  }
+  const { repository } = request;
 
   const index = repositories.indexOf(repository[0]);
   repositories[index].title = title ? title : repositories[index].title;
@@ -48,16 +57,8 @@ app.put("/repositories/:id", (request, response) => {
 
 });
 
-app.delete("/repositories/:id", (request, response) => {
-  const { id } = request.params;
-
-  if (!id) return response.status(400).json({ error: "ID não informado" });
-
-  const repository = repositories.filter(repository => repository.id === id);
-
-  if (repository.length === 0) {
-    return response.status(400).json({ error: "Não existe repositório com o ID informado" });
-  }
+app.delete("/repositories/:id", checkIdMiddleware, (request, response) => {
+  const { repository } = request;
 
   const index = repositories.indexOf(repository[0]);
 
@@ -66,17 +67,9 @@ app.delete("/repositories/:id", (request, response) => {
   return response.json(repositories);
 });
 
-app.post("/repositories/:id/like", (request, response) => {
-  const { id } = request.params;
-
-  if (!id) return response.status(400).json({ error: "ID não informado" });
-
-  const repository = repositories.filter(repository => repository.id === id);
-
-  if (repository.length === 0) {
-    return response.status(400).json({ error: "Não existe repositório com o ID informado" });
-  }
-
+app.post("/repositories/:id/like", checkIdMiddleware, (request, response) => {
+  const { repository } = request;
+  
   const index = repositories.indexOf(repository[0]);
 
   repositories[index].likes++;
