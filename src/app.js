@@ -67,7 +67,21 @@ app.delete("/repositories/:id", (request, response) => {
 });
 
 app.post("/repositories/:id/like", (request, response) => {
-  // TODO
+  const { id } = request.params;
+
+  if (!id) return response.status(400).json({ error: "ID não informado" });
+
+  const repository = repositories.filter(repository => repository.id === id);
+
+  if (repository.length === 0) {
+    return response.status(400).json({ error: "Não existe repositório com o ID informado" });
+  }
+
+  const index = repositories.indexOf(repository[0]);
+
+  repositories[index].likes++;
+
+  return response.json(repositories[index]);
 });
 
 module.exports = app;
