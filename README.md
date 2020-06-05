@@ -1,4 +1,4 @@
-# desafio Conceitos NodeJS
+# Desafio Conceitos NodeJS
 Desafio sobre os conceitos do Node js, do curso GoStack da @rocketseat.
 
 Desafio proposto pela @Rocketseat para por em prática os conceitos básicos do node.js. 
