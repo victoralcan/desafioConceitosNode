@@ -45,7 +45,6 @@ app.post("/repositories", (request, response) => {
 
 app.put("/repositories/:id", checkIdMiddleware, (request, response) => {
   const { title, url, techs } = request.body;
-  const { id } = request.params;
   const { repository } = request;
 
   const index = repositories.indexOf(repository[0]);
@@ -64,7 +63,7 @@ app.delete("/repositories/:id", checkIdMiddleware, (request, response) => {
 
   repositories.splice(index, 1);
 
-  return response.json(repositories);
+  return response.status(204).json(repositories);
 });
 
 app.post("/repositories/:id/like", checkIdMiddleware, (request, response) => {
